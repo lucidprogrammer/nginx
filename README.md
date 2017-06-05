@@ -32,9 +32,14 @@ docker exec -t nginx bash -c 'cp /etc/letsencrypt/archive/$WEB_HOST/privkey1.pem
 docker exec -t nginx bash -c 'cp /etc/letsencrypt/archive/$WEB_HOST/fullchain1.pem /etc/nginx/ssl/'
 
 //now move to the appropriate directory
-docker exec -t nginx bash -c 'cat /etc/letsencrypt/archive/$WEB_HOST/fullchain1.pem /etc/letsencrypt/archive/$WEBITEL_HOST/privkey1.pem > /etc/nginx/ssl/certificate.pem'
+docker exec -t nginx bash -c 'cat /etc/letsencrypt/archive/$WEB_HOST/fullchain1.pem /etc/letsencrypt/archive/$WEB_HOST/privkey1.pem > /etc/nginx/ssl/certificate.pem'
 
-docker restart nginx        
+//get the conf as per ssl
+docker exec -t nginx bash -c 'cp -rf /etc/nginx/conf.d/default-ssl.template /etc/nginx/conf.d/default.conf'
+
+docker restart nginx  
+
+//if you go to your domain, it should redirect to https which uses the brand new certificate !!      
 
 ```
 

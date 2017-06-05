@@ -9,7 +9,8 @@ RUN git clone --depth 1 https://github.com/letsencrypt/letsencrypt /opt/letsencr
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY default.conf /etc/nginx/conf.d/default.conf
 COPY default-ssl.conf /etc/nginx/conf.d/default-ssl.template
-
+# keep an ssl folder already created
+RUN mkdir -p /etc/nginx/ssl/
 COPY site.conf /opt/letsencrypt/www/site.conf
 COPY enterpoint.sh /enterpoint.sh
 
