@@ -58,7 +58,7 @@ docker run -v $(pwd)/certs:/etc/letsencrypt/ -v $(pwd)/log:/var/log/ certbot/cer
 
 
 //you are ssl enabled.
-docker run -p 80:80 -p 443:443 -d -e WEB_HOST=edge.tendigittext.com -e WEB_SSL=on -v $(pwd)/certs/live/$domain:/etc/nginx/ssl/ -v $(pwd)/acme:/opt/letsencrypt/www lucidprogrammer/nginx:latest
+docker run -p 80:80 -p 443:443 -d -e WEB_HOST=$domain -e WEB_SSL=on -v $(pwd)/certs/live/$domain:/etc/nginx/ssl/ -v $(pwd)/acme:/opt/letsencrypt/www lucidprogrammer/nginx:latest
 
 //now you can set the same above for cron to renew certs
 
