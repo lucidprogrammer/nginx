@@ -21,7 +21,7 @@ if [ "$METEOR_APP" ]; then
   # uncomment the default location which points to meteor_app
   if grep -q 443 /etc/nginx/conf.d/default.conf; then
     toChangeUpstream=$(sed -n 12p /etc/nginx/conf.d/default.conf)
-    toChangeLocation=$(sed -n 32p /etc/nginx/conf.d/default.conf)
+    toChangeLocation=$(sed -n 33p /etc/nginx/conf.d/default.conf)
   else
     toChangeUpstream=$(sed -n 6p /etc/nginx/conf.d/default.conf)
     toChangeLocation=$(sed -n 23p /etc/nginx/conf.d/default.conf)
