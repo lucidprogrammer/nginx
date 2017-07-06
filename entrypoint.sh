@@ -18,7 +18,12 @@ if [ -f /etc/nginx/conf.d/proxies/proxies.json ] ; then
   # lets update the upstream conf file. we just need one file here
   # >> will create the file the first time, and append to it the next loops
   jq ".proxies[]"  /etc/nginx/conf.d/proxies/proxies.json | \
-  jq '"upstream \(.appName)_app { server \(.appName):\(.port); }"' >> /etc/nginx/conf.d/upstream/upstream.conf
+  jq '"upstream \(.appName)_app { server \(.appName):\(.port); }"' | \
+  tr -d '"' >> /etc/nginx/conf.d/upstream/upstream.conf
+
+  #same command above in one line for copy paste testing
+  #jq ".proxies[]"  site.nginx.json|  jq '"upstream \(.appName)_app { server \(.appName):\(.port); }"' |  tr -d '"'
+
   # now lets create the locations,
   jq ".proxies[]"  /etc/nginx/conf.d/proxies/proxies.json| \
   jq '"location \(.location.regex) \(.location.path) { proxy_set_header Host $host; proxy_set_header X-Real-IP $remote_addr; proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; proxy_set_header X-Forwarded-Proto $scheme; proxy_pass http://\(.appName)_app; }"' |
