@@ -1,7 +1,7 @@
-Nginx
+# Nginx
 =====
 
-Minimal nginx docker with environment configurable domain name and proxy settings for a meteor app.
+Minimal nginx docker on alpine with environment configurable domain name and proxies.
 
 ## Supported Docker versions
 
@@ -13,9 +13,12 @@ Expecting the following environment variables
 ```
 WEB_HOST
 WEB_SSL
-METEOR_APP  [name of your meteor app running in 3000, if it is available, default location will go to that.]
+
 
 ```
+
+### How to setup a new PROXY
+Use proxies.sample.json to create the proxy entries. Then -v thejsonfile::/etc/nginx/conf.d/proxies/proxies.json
 
 ## Configuring certificates for ssl
 

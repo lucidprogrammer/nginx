@@ -1,0 +1,16 @@
+{
+  "proxies":[
+    {
+      "appName": "app1",
+      "port": "4000",
+      "location": {"path": "/", "regex":""}
+    },
+    {
+      "appName": "app2",
+      "port": "5000",
+      "location": {"path": "/something", "regex": "^~"},
+      "allow": ["127.0.0.1","200.200.200.200"]
+
+    }
+  ]
+}
