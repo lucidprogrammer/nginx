@@ -20,7 +20,7 @@ if [ -f /etc/nginx/conf.d/proxies/proxies.json ] ; then
   jq ".proxies[]"  /etc/nginx/conf.d/proxies/proxies.json | \
   jq '"upstream \(.appName)_app { server \(.appName):\(.port); }"' >> /etc/nginx/conf.d/upstream/upstream.conf
   # now lets create the locations,
-  jq ".proxies[]"  site.nginx.json| \
+  jq ".proxies[]"  /etc/nginx/conf.d/proxies/proxies.json| \
   jq '"location \(.location.regex) \(.location.path) { proxy_set_header Host $host; proxy_set_header X-Real-IP $remote_addr; proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; proxy_set_header X-Forwarded-Proto $scheme; proxy_pass http://\(.appName)_app; }"' |
   tr -d '"' \
   >> /etc/nginx/conf.d/locations/locations.conf
