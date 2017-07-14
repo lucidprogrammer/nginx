@@ -15,7 +15,7 @@ RUN mkdir -p /etc/nginx/conf.d/locations
 RUN mkdir -p /etc/nginx/conf.d/upstream
 
 # copy the sample json file for info
-COPY proxies.sample.json /etc/nginx/conf.d/proxies/proxies.sample
+COPY proxies.sample.json /etc/nginx/conf.d/proxies/proxies.json.sample
 # copy the default as a sample, if there is no proxies.json in /proxies folder we will convert this to default.conf
 COPY location.default.conf /etc/nginx/conf.d/locations/default.sample
 COPY location.proxy.sample.conf /etc/nginx/conf.d/locations/proxy.sample

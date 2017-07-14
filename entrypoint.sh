@@ -32,7 +32,7 @@ if [ -f /etc/nginx/conf.d/proxies/proxies.json ] ; then
 
 else
   # so we will have the default nginx page showing up
- mv /etc/nginx/conf.d/locations/default.sample /etc/nginx/conf.d/locations/default.conf
+ cp /etc/nginx/conf.d/locations/default.sample /etc/nginx/conf.d/locations/default.conf
  echo "No /etc/nginx/conf.d/proxies/proxies.json found, reverting to default nginx page"
 fi
 
