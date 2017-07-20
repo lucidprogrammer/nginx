@@ -3,6 +3,63 @@
 set -e
 SSL="on"
 
+# define a function to reuse to calculate the location entry
+get_location_entry () {
+    local json=$1
+
+    # check for websocket support, do we need it
+    local websockets
+    websockets="$(echo "$json" | jq ".websockets" | tr -d '"')"
+    local noWebSocketsEntry
+    noWebSocketsEntry="$(cat /etc/nginx/conf.d/locations/proxy.basic)"
+    local onlyForWebSockets
+    if [ "$websockets" = "yes" ]; then
+      onlyForWebSockets="$(cat /etc/nginx/conf.d/locations/proxy.websockets)"
+    else
+      onlyForWebSockets="# no keep alive or websockets supported for this location"
+    fi
+    # have a specific appName
+    local appName
+    appName="http://$(echo "$json" | jq ".appName" | tr -d '"')_app"
+
+    local appNameEntry
+    appNameEntry="proxy_pass $appName;"
+
+    # look for allow
+    local allow
+    allow="$(echo "$json" | jq ".allow" | tr -d '"')"
+    local allowEntries
+
+    old_IFS=$IFS
+
+    if [ "$allow" != null ]; then
+      IFS=','
+      for ip in $allow
+      do
+        if [ $allowEntries ]; then
+          allowEntries="$(printf "%s\n allow %s;" $allowEntries $ip)"
+        else
+          allowEntries="$(printf "allow %s;" $ip)"
+        fi
+
+      done
+      allowEntries="$(printf "%s\n deny all;" $allowEntries)"
+    else
+      allowEntries="# we allow all traffic by default"
+    fi
+    IFS=${old_IFS}
+
+
+    local locationRegex
+    locationRegex="$(echo "$json" | jq ".location.regex" | tr -d '"' )"
+
+    local location
+    location="$(echo "$json" | jq ".location.path" | tr -d '"')"
+
+    # formatted output
+    printf "location %s %s {\n%s\n%s\n%s\n%s\n}\n" "$locationRegex" "$location" "$allowEntries" "$noWebSocketsEntry" "$onlyForWebSockets" "$appNameEntry"
+}
+
 if [ "$WEB_SSL" = "$SSL" ]; then
     echo "Start HTTPS"
     cp -rf /etc/nginx/conf.d/default-ssl.template /etc/nginx/conf.d/default.conf
@@ -21,21 +78,18 @@ if [ -f /etc/nginx/conf.d/proxies/proxies.json ] ; then
   jq '"upstream \(.appName)_app { server \(.appName):\(.port); }"' | \
   tr -d '"' >> /etc/nginx/conf.d/upstream/upstream.conf
 
-  #same command above in one line for copy paste testing
-  #jq ".proxies[]"  site.nginx.json|  jq '"upstream \(.appName)_app { server \(.appName):\(.port); }"' |  tr -d '"'
-
   # now lets create the locations,
-  jq ".proxies[]"  /etc/nginx/conf.d/proxies/proxies.json| \
-  jq '"location \(.location.regex) \(.location.path) { proxy_set_header Host $host; proxy_set_header X-Real-IP $remote_addr; proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; proxy_set_header X-Forwarded-Proto $scheme; proxy_pass http://\(.appName)_app; }"' |
-  tr -d '"' \
-  >> /etc/nginx/conf.d/locations/locations.conf
+  itemsCount="$(jq ".proxies | length" /etc/nginx/conf.d/proxies/proxies.json)"
+
+  for j in $(seq 0 $(($itemsCount-1))); do
+   get_location_entry "$(jq ".proxies[$j]"  /etc/nginx/conf.d/proxies/proxies.json)"  >> /etc/nginx/conf.d/locations/locations.conf
+  done
 
 else
   # so we will have the default nginx page showing up
  cp /etc/nginx/conf.d/locations/default.sample /etc/nginx/conf.d/locations/default.conf
  echo "No /etc/nginx/conf.d/proxies/proxies.json found, reverting to default nginx page"
 fi
-
 
 echo "Starting nginx daemon"
 nginx -g "daemon off;"

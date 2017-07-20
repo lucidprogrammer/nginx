@@ -18,7 +18,8 @@ RUN mkdir -p /etc/nginx/conf.d/upstream
 COPY proxies.sample.json /etc/nginx/conf.d/proxies/proxies.json.sample
 # copy the default as a sample, if there is no proxies.json in /proxies folder we will convert this to default.conf
 COPY location.default.conf /etc/nginx/conf.d/locations/default.sample
-COPY location.proxy.sample.conf /etc/nginx/conf.d/locations/proxy.sample
+COPY location.proxy.basic /etc/nginx/conf.d/locations/proxy.basic
+COPY location.proxy.websockets /etc/nginx/conf.d/locations/proxy.websockets
 
 COPY entrypoint.sh /entrypoint.sh
 

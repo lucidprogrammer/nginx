@@ -20,6 +20,66 @@ WEB_SSL
 ### How to setup a new PROXY
 Use proxies.sample.json to create the proxy entries. Then -v thejsonfile::/etc/nginx/conf.d/proxies/proxies.json
 
+#### Required keys
+-   appName
+-   port
+-   location
+-   location.path
+-   location.regex
+
+```
+
+"appName": "app1",
+"port": "4000",
+"location": {"path": "/", "regex":""},
+
+```
+#### Optional keys
+
+-   websockets(yes)
+-   port(comma separated list)
+
+```
+//by default websockets and keep alive connections are disabled, for enabling websockets, you need to give the following entry
+//if the entry is not available, that specific location does not support websockets
+"websockets": "yes",
+//if you don't provide the following entry, all connections are allowed by default, otherwise only the ip`s in the list are allowed.
+"allow": "127.0.0.1, 200.200.200.200"
+
+```
+#### Override nginx location params
+
+You can override the default nginx params for (with sockets and without sockets) by creating your own file in the format as provided in location.proxy.basic and location.proxy.websockets and mapping as follows.
+
+```
+-v mylocation.proxy.basic.conf:/etc/nginx/conf.d/locations/proxy.basic:ro
+-v mylocation.proxy.websockets.conf:/etc/nginx/conf.d/locations/proxy.websockets:ro
+
+
+```
+
+
+#### Custom locations
+If you want to add custom locations, you can map a conf file to the locations folder. For example
+
+```
+-v mylocation.conf:/etc/nginx/conf.d/locations/mylocation.conf:ro
+
+
+```
+#### Use Case
+
+//for meteor , if you wish to serve static files faster and let the browser to cache them instead of going to proxy
+```
+
+location ~* "^/[a-z0-9]{40}\.(css|js)$" {
+  root /home/ubuntu/app/bundle/programs/web.browser;
+  access_log off;
+  expires max;
+}
+```
+
+
 ## Configuring certificates for ssl
 
 
