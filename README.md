@@ -37,7 +37,7 @@ Use proxies.sample.json to create the proxy entries. Then -v thejsonfile::/etc/n
 #### Optional keys
 
 -   websockets(yes)
--   port(comma separated list)
+-   allow(comma separated list)
 
 ```
 //by default websockets and keep alive connections are disabled, for enabling websockets, you need to give the following entry
