@@ -57,7 +57,7 @@ You can override the default nginx params for (with sockets and without sockets)
 
 
 ```
-
+If your location has specific regex for proxies, you can add more than one entry for the same proxy, which will result in single upstream with multiple locations.
 
 #### Custom locations
 If you want to add custom locations, you can map a conf file to the locations folder. For example
