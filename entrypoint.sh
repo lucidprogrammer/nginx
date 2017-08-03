@@ -52,9 +52,10 @@ get_location_entry () {
 
     local locationRegex
     locationRegex="$(echo "$json" | jq ".location.regex" | tr -d '"' )"
-
+    # replace " in the string
+    # in json file \ is escaped with another \. So replace \\ with \
     local location
-    location="$(echo "$json" | jq ".location.path" | tr -d '"')"
+    location="$(echo "$json" | jq ".location.path" | tr -d '"' | sed 's/\\\\/\\/')"
 
     # formatted output
     printf "location %s %s {\n%s\n%s\n%s\n%s\n}\n" "$locationRegex" "$location" "$allowEntries" "$noWebSocketsEntry" "$onlyForWebSockets" "$appNameEntry"
@@ -74,9 +75,10 @@ fi
 if [ -f /etc/nginx/conf.d/proxies/proxies.json ] ; then
   # lets update the upstream conf file. we just need one file here
   # >> will create the file the first time, and append to it the next loops
+  # awk '!a[$0]++' removes any duplicate upstream entries
   jq ".proxies[]"  /etc/nginx/conf.d/proxies/proxies.json | \
   jq '"upstream \(.appName)_app { server \(.appName):\(.port); }"' | \
-  tr -d '"' >> /etc/nginx/conf.d/upstream/upstream.conf
+  tr -d '"' | awk '!a[$0]++' >> /etc/nginx/conf.d/upstream/upstream.conf
 
   # now lets create the locations,
   itemsCount="$(jq ".proxies | length" /etc/nginx/conf.d/proxies/proxies.json)"
