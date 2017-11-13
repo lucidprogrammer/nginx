@@ -6,7 +6,14 @@ SSL="on"
 # define a function to reuse to calculate the location entry
 get_location_entry () {
     local json=$1
+    # do we need a basic authentication
 
+    local authentication
+    authentication="$(echo "$json" | jq ".authentication" | tr -d '"')"
+    local authentication_entry=""
+    if [ -f "$authentication" ]; then
+      authentication_entry="$(printf "auth_basic \"Restricted Content\";\n auth_basic_user_file %s;" "$authentication")"
+    fi
     # check for websocket support, do we need it
     local websockets
     websockets="$(echo "$json" | jq ".websockets" | tr -d '"')"
@@ -58,7 +65,7 @@ get_location_entry () {
     location="$(echo "$json" | jq ".location.path" | tr -d '"' | sed 's/\\\\/\\/')"
 
     # formatted output
-    printf "location %s %s {\n%s\n%s\n%s\n%s\n}\n" "$locationRegex" "$location" "$allowEntries" "$noWebSocketsEntry" "$onlyForWebSockets" "$appNameEntry"
+    printf "location %s %s {\n%s\n%s\n%s\n%s\n%s\n}\n" "$locationRegex" "$location" "$allowEntries" "$noWebSocketsEntry" "$onlyForWebSockets" "$appNameEntry" "$authentication_entry"
 }
 
 if [ "$WEB_SSL" = "$SSL" ]; then
