@@ -38,6 +38,7 @@ Use proxies.sample.json to create the proxy entries. Then -v thejsonfile::/etc/n
 
 -   websockets(yes)
 -   allow(comma separated list)
+-   authentication
 
 ```
 //by default websockets and keep alive connections are disabled, for enabling websockets, you need to give the following entry
@@ -45,7 +46,10 @@ Use proxies.sample.json to create the proxy entries. Then -v thejsonfile::/etc/n
 "websockets": "yes",
 //if you don't provide the following entry, all connections are allowed by default, otherwise only the ip`s in the list are allowed.
 "allow": "127.0.0.1, 200.200.200.200"
-
+// if you want to provide a basic auth to a proxy
+"authentication": "/etc/nginx/.htpasswd"
+//so while running the container, you may do as follows
+docker run -d -v "$(pwd)"/.htpasswd:/etc/nginx/.htpasswd -v "$(pwd)"/proxies.json:/etc/nginx/conf.d/proxies/proxies.json  lucidprogrammer/nginx
 ```
 #### Override nginx location params
 
